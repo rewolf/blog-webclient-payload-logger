@@ -6,3 +6,7 @@ intuitive how to do this with WebClient, but the blog above explains one method.
 
 This repository provides a custom JSON encoder and decoder, as well as JUnit 5 tests
 that verify these codecs.
+
+## Running the tests
+
+    ./gradlew clean test
