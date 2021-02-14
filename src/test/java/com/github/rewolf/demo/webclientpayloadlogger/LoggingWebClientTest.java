@@ -7,14 +7,14 @@ import lombok.NoArgsConstructor;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
-import static org.junit.Assert.assertEquals;
 
 public class LoggingWebClientTest {
     static final TestModel TEST_DATA = new TestModel("Smith");
@@ -47,9 +47,7 @@ public class LoggingWebClientTest {
                  .uri("/aa")
                  .contentType(MediaType.APPLICATION_JSON)
                  .body(BodyInserters.fromValue(TEST_DATA))
-                 .exchange()
-                 .block()
-                 .releaseBody()
+                 .exchangeToMono(ClientResponse::releaseBody)
                  .block();
 
         final String transmittedJson = mockBackEnd.takeRequest().getBody().readString(StandardCharsets.UTF_8);
@@ -74,9 +72,7 @@ public class LoggingWebClientTest {
         final TestModel parsedData = webClient.get()
                                               .uri("/aa")
                                               .accept(MediaType.APPLICATION_JSON)
-                                              .exchange()
-                                              .block()
-                                              .bodyToMono(TestModel.class)
+                                              .exchangeToMono(r -> r.bodyToMono(TestModel.class))
                                               .block();
 
         mockBackEnd.takeRequest();
